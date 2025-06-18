@@ -1,0 +1,6 @@
+# Allow all friendly web crawlers full access to the site.
+User-agent: *
+Allow: /
+
+# Point crawlers to the sitemap for a list of all pages.
+Sitemap: https://www.50221337.xyz/sitemap.xml
