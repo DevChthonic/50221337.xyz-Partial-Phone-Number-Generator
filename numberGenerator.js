@@ -1,8 +1,7 @@
 /**
  * numberGenerator.js
- * This script handles the logic for the Phone Number Combination Generator.
- * It generates number combinations based on a user-provided pattern,
- * validates input, and displays results dynamically.
+ * This script handles the logic for the Partial Phone Number Combination Generator.
+ * This is a simplified version that displays all results at once.
  */
 
 // DOM Elements
@@ -14,13 +13,16 @@ const comboCount = document.getElementById('combo-count');
 const messageBox = document.getElementById('message-box');
 const copyBtn = document.getElementById('copy-btn');
 
-// Event listener for the generate button
-generateBtn.addEventListener('click', () => {
+// --- EVENT LISTENERS ---
+generateBtn.addEventListener('click', handleGenerateClick);
+copyBtn.addEventListener('click', handleCopy);
+
+/**
+ * Main function to handle the "Generate" button click.
+ */
+function handleGenerateClick() {
     const pattern = phoneInput.value;
-    // Clear previous results and messages
-    resultsList.innerHTML = '';
-    messageBox.classList.add('hidden');
-    resultsContainer.classList.add('hidden');
+    resetUI();
 
     const unknownCount = (pattern.match(/x/gi) || []).length;
 
@@ -31,18 +33,48 @@ generateBtn.addEventListener('click', () => {
     }
 
     // Set a reasonable limit to prevent browser from crashing
-    if (unknownCount > 6) { 
-        showMessage(`Generating 10^${unknownCount} combinations is too much for your browser! Please use 6 or fewer 'x's.`, 'error');
+    // 100,000 combinations is a safe upper limit for most modern browsers.
+    if (unknownCount > 5) { 
+        showMessage(`Generating 10^${unknownCount} combinations may crash your browser! Please use 5 or fewer 'x's.`, 'error');
         return;
     }
     
-    // --- Generation Logic ---
+    // --- Generation & Display ---
     const combinations = [];
     generateCombinations(pattern, combinations);
-    
-    // --- Display Results ---
     displayResults(combinations);
-});
+}
+
+/**
+ * Handles copying the full list of combinations to the clipboard.
+ */
+function handleCopy() {
+    const textToCopy = Array.from(resultsList.children)
+        .map(p => p.textContent)
+        .join('\n');
+
+    if (!textToCopy) {
+        showMessage('Nothing to copy. Please generate a list first.', 'error');
+        return;
+    }
+
+    const textArea = document.createElement('textarea');
+    textArea.value = textToCopy;
+    textArea.style.position = 'fixed';
+    textArea.style.opacity = 0;
+    document.body.appendChild(textArea);
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        showMessage('Copied to clipboard!', 'success');
+    } catch (err) {
+        showMessage('Failed to copy. Your browser may not support this feature.', 'error');
+    }
+    
+    document.body.removeChild(textArea);
+}
+
 
 /**
  * Recursively generates all combinations for a given pattern.
@@ -51,19 +83,16 @@ generateBtn.addEventListener('click', () => {
  */
 function generateCombinations(currentPattern, combinations) {
     const index = currentPattern.indexOf('x');
-
-    // Base case: If no 'x' is found, we have a complete number.
     if (index === -1) {
         combinations.push(currentPattern);
         return;
     }
-
-    // Recursive step: Replace 'x' with digits 0-9 and recurse.
     for (let i = 0; i <= 9; i++) {
         const newPattern = currentPattern.substring(0, index) + i + currentPattern.substring(index + 1);
         generateCombinations(newPattern, combinations);
     }
 }
+
 
 /**
  * Displays the generated combinations on the page.
@@ -72,7 +101,6 @@ function generateCombinations(currentPattern, combinations) {
 function displayResults(combinations) {
     if (combinations.length === 0) return;
     
-    // Use a DocumentFragment for performance when adding many elements
     const fragment = document.createDocumentFragment();
     combinations.forEach(num => {
         const p = document.createElement('p');
@@ -87,6 +115,15 @@ function displayResults(combinations) {
 }
 
 /**
+ * Resets the UI to its initial state before a generation.
+ */
+function resetUI() {
+    resultsList.innerHTML = '';
+    messageBox.classList.add('hidden');
+    resultsContainer.classList.add('hidden');
+}
+
+/**
  * Shows an error or informational message.
  * @param {string} message - The message to display.
  * @param {'success' | 'error'} type - The type of message to style.
@@ -94,10 +131,8 @@ function displayResults(combinations) {
 function showMessage(message, type = 'error') {
     messageBox.textContent = message;
     
-    // Reset classes
     messageBox.classList.remove('bg-red-800/50', 'border-red-700', 'text-red-200', 'bg-green-800/50', 'border-green-700', 'text-green-200');
 
-    // Apply new classes based on type
     if (type === 'success') {
         messageBox.classList.add('bg-green-800/50', 'border-green-700', 'text-green-200');
     } else {
@@ -106,32 +141,3 @@ function showMessage(message, type = 'error') {
     
     messageBox.classList.remove('hidden');
 }
-
-// Event listener for the copy button
-copyBtn.addEventListener('click', () => {
-    const textToCopy = Array.from(resultsList.children)
-        .map(p => p.textContent)
-        .join('\n');
-    
-    // Create a temporary textarea element to copy the text
-    const textArea = document.createElement('textarea');
-    textArea.value = textToCopy;
-    // Make it invisible
-    textArea.style.position = 'fixed';
-    textArea.style.top = 0;
-    textArea.style.left = 0;
-    textArea.style.opacity = 0;
-
-    document.body.appendChild(textArea);
-    textArea.select();
-    
-    try {
-        // Use the older execCommand for broader compatibility in sandboxed environments
-        document.execCommand('copy');
-        showMessage('Copied to clipboard!', 'success');
-    } catch (err) {
-        showMessage('Failed to copy. Your browser may not support this feature.', 'error');
-    }
-    
-    document.body.removeChild(textArea);
-});
