@@ -1,0 +1,28 @@
+/*
+ * styles.css
+ * This file contains custom styles for the Phone Number Generator application.
+ */
+
+body {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar for the results list to match the dark theme */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #2d3748; /* Corresponds to Tailwind's gray-800 */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #4a5568; /* Corresponds to Tailwind's gray-600 */
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #718096; /* Corresponds to Tailwind's gray-500 */
+}
