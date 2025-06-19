@@ -6,6 +6,8 @@ A simple, fast, and privacy-focused web tool to generate all possible combinatio
 
 ### **Live Demo: [50221337.xyz](https://www.50221337.xyz/)**
 
+### **Blog Post: [The Elena Project: Accidental SIGINT and Lean Product Engineering](https://devchthonic.substack.com/p/the-elena-project-accidental-sigint)**
+
 ![Screenshot of the App](https://i.imgur.com/B7rYsla.png)
 
 ---
